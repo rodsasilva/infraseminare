@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-bookworm
+    container_name: db_dev
+    user: "999:999"  # Use um UID/GID específico
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - data:/var/lib/postgresql/data
+      - ./postgres-initdb:/docker-entrypoint-initdb.d/
+      - ./postgres-cert:/var/lib/postgresql/certs/
+    ports:
+      - "5432:5432"
+    command: 
+      - "postgres"
+      - "-c"
+      - "ssl=on"
+      - "-c"
+      - "ssl_cert_file=/var/lib/postgresql/certs/fullchain.pem"
+      - "-c"
+      - "ssl_key_file=/var/lib/postgresql/certs/privkey.pem"
+    restart: always
+
+volumes:
+  data:

@@ -1,0 +1,28 @@
+1 - Ajustes as permissões dos arquivos:
+sudo chown 999:999 ./postgres-cert/fullchain.pem ./postgres-cert/privkey.pem
+sudo chmod 600 ./postgres-cert/fullchain.pem ./postgres-cert/privkey.pem
+2 - Recrie e inicie o container:
+docker-compose up -d
+3 - Verifique os logs:
+docker-compose logs postgres
+4 - Caso esteja ainda enfretando problemas veja os comandos abaixo:
+docker-compose down -v
+docker-compose up -d
+5 - para validar o SSL no docker segue o comando abaixo:
+docker exec -it db_dev psql -U postgres -c "SHOW ssl;"
+Atenção: db_dev é nome do container
+
+###
+
+Aqui estão algumas dicas adicionais para manter seu ambiente seguro e funcionando corretamente:
+
+1. Sempre que você atualizar os certificados SSL, lembre-se de ajustar as permissões novamente.
+
+2. Mantenha seus certificados atualizados para garantir a segurança contínua das conexões SSL.
+
+3. Considere implementar uma rotação regular de certificados como parte de suas práticas de segurança.
+
+4. Ao se conectar ao banco de dados a partir de aplicações clientes, certifique-se de configurá-las para usar SSL.
+
+5. Regularmente, verifique os logs do PostgreSQL para garantir que não haja problemas relacionados ao SSL ou outras questões de segurança.
+
