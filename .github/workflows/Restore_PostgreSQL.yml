@@ -38,4 +38,4 @@ jobs:
           PGDATABASE: ${{ secrets.RDS_DATABASE }}
           PGPORT: ${{ secrets.RDS_PORT }}
         run: |
-          psql -U $PGUSER -h $PGHOST $PGDATABASE -p $PGPORT < backup.sql
+          pg_restore -U $PGUSER -h $PGHOST -p $PGPORT -d $PGDATABASE --clean backup.dump
