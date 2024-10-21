@@ -12,20 +12,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Instalar PostgreSQL client versão 16
         env:
-          PGHOST: ${{ secrets.RDS_HOST }}       # Host da instância RDS
-          PGUSER: ${{ secrets.RDS_USER }}       # Usuário do banco de dados
-          PGPASSWORD: ${{ secrets.RDS_PASSWORD }} # Senha do banco de dados
-          PGDATABASE: ${{ secrets.RDS_DATABASE }} # Nome do banco de dados
+          PGHOST: ${{ secrets.RDS_HOST }}
+          PGUSER: ${{ secrets.RDS_USER }}
+          PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
+          PGDATABASE: ${{ secrets.RDS_DATABASE }}
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-16  # Instala a versão correta do PostgreSQL client
+          sudo apt-get install -y postgresql-client-16
 
       - name: Executar backup
         env:
@@ -39,10 +41,10 @@ jobs:
 
       - name: Salvar backup no repositório
         env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --local user.email "rodrigo.sabinoti@gmail.com"
-          git config --local user.name "rodsasilva"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add backup.sql
           git commit -m "Backup do banco de dados em $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/rodsasilva/infraseminare.git main  # Altere para a branch desejada
+          git push
