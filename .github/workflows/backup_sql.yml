@@ -1,34 +1,44 @@
----
 name: Backup PostgreSQL
+
 on:
   schedule:
-    - cron: 0 2 * * *
-  workflow_dispatch: null
+    - cron: '0 2 * * *'  # Executa diariamente às 02:00 UTC
+  workflow_dispatch:  # Permite execução manual
+
 jobs:
   backup:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Configurar PostgreSQL
+
+      - name: Instalar PostgreSQL client versão 16
         env:
-          PGHOST: ${{ secrets.RDS_HOST }}
-          PGUSER: ${{ secrets.RDS_USER }}
-          PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
-          PGDATABASE: ${{ secrets.RDS_DATABASE }}
+          PGHOST: ${{ secrets.RDS_HOST }}       # Host da instância RDS
+          PGUSER: ${{ secrets.RDS_USER }}       # Usuário do banco de dados
+          PGPASSWORD: ${{ secrets.RDS_PASSWORD }} # Senha do banco de dados
+          PGDATABASE: ${{ secrets.RDS_DATABASE }} # Nome do banco de dados
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt-get install -y wget
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16  # Instala a versão correta do PostgreSQL client
+
       - name: Executar backup
         env:
           PGHOST: ${{ secrets.RDS_HOST }}
           PGUSER: ${{ secrets.RDS_USER }}
           PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
           PGDATABASE: ${{ secrets.RDS_DATABASE }}
+          PGPORT: ${{ secrets.RDS_PORT }}
         run: |
-          pg_dump -U $PGUSER -h $PGHOST $PGDATABASE > backup.sql
+          pg_dump -U $PGUSER -h $PGHOST $PGDATABASE -p $PGPORT > backup.sql
+
       - name: Salvar backup no repositório
-        run: >
+        run: |
           git config --local user.email "rodrigo.sabinoti@gmail.com"
           git config --local user.name "rodsasilva"
           git add backup.sql
