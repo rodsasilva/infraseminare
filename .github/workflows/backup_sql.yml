@@ -39,10 +39,10 @@ jobs:
 
       - name: Salvar backup no repositório
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           git config --local user.email "rodrigo.sabinoti@gmail.com"
           git config --local user.name "rodsasilva"
           git add backup.sql
           git commit -m "Backup do banco de dados em $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/rodsasilva/infraseminare.git main  # Altere para a branch desejada
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/rodsasilva/infraseminare.git main  # Altere para a branch desejada
