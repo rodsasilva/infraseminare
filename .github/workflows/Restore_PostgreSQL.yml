@@ -1,0 +1,41 @@
+name: Restore PostgreSQL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Restore:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Baixar arquivo de backup
+        uses: actions/download-artifact@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Instalar PostgreSQL client versão 16
+        env:
+          PGHOST: ${{ secrets.RDS_HOST }}
+          PGUSER: ${{ secrets.RDS_USER }}
+          PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
+          PGDATABASE: ${{ secrets.RDS_DATABASE }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+
+      - name: Restaurar banco de dados
+        env:
+          PGHOST: ${{ secrets.RDS_HOST }}
+          PGUSER: ${{ secrets.RDS_USER }}
+          PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
+          PGDATABASE: ${{ secrets.RDS_DATABASE }}
+          PGPORT: ${{ secrets.RDS_PORT }}
+        run: |
+          psql -U $PGUSER -h $PGHOST $PGDATABASE -p $PGPORT < backup.sql
