@@ -15,7 +15,7 @@ jobs:
 
       - name: Configurar PostgreSQL
         env:
-          PGHOST: ${{ secrets.RDS_HOST }}       # Host da instância RDS
+          PGHOST: ${{ secrets. }}       # Host da instância RDS
           PGUSER: ${{ secrets.RDS_USER }}       # Usuário do banco de dados
           PGPASSWORD: ${{ secrets.RDS_PASSWORD }} # Senha do banco de dados
           PGDATABASE: ${{ secrets.RDS_DATABASE }} # Nome do banco de dados
@@ -24,18 +24,19 @@ jobs:
           sudo apt-get install -y postgresql-client
 
       - name: Executar backup
-        env:
+        env:RDS_HOST
           PGHOST: ${{ secrets.RDS_HOST }}
           PGUSER: ${{ secrets.RDS_USER }}
           PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
           PGDATABASE: ${{ secrets.RDS_DATABASE }}
+          PGPORT: ${{ secrets.RDS_PORT }}
         run: |
-          pg_dump -U $PGUSER -h $PGHOST $PGDATABASE > backup.sql
+          pg_dump -U $PGUSER -h $PGHOST $PGDATABASE -p $PGPORT > backup.sql
 
       - name: Salvar backup no repositório
         run: |
-          git config --local user.email "you@example.com"
-          git config --local user.name "Your Name"
+          git config --local user.email "rodrigo.sabinoti@gmail.com"
+          git config --local user.name "rodsasilva
           git add backup.sql
           git commit -m "Backup do banco de dados em $(date +'%Y-%m-%d %H:%M:%S')"
           git push origin main  # Altere para a branch desejad
