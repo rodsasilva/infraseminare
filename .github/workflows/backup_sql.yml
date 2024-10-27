@@ -1,9 +1,7 @@
 name: Backup PostgreSQL
 
 on:
-  schedule:
-    - cron: '0 2 * * *'  # Executa diariamente às 02:00 UTC
-  workflow_dispatch:  # Permite execução manual
+  workflow_dispatch:  # A principio sera manual
 
 jobs:
   backup:
@@ -36,8 +34,9 @@ jobs:
           PGPASSWORD: ${{ secrets.RDS_PASSWORD }}
           PGDATABASE: ${{ secrets.RDS_DATABASE }}
           PGPORT: ${{ secrets.RDS_PORT }}
+          data: $( date + %Y-%m-%d %H:%M:%S')
         run: |
-          pg_dump -U $PGUSER -h $PGHOST $PGDATABASE -p $PGPORT -Fc -f backup.dump
+          pg_dump -U $PGUSER -h $PGHOST -p $PGPORT $PGDATABASE -Fc -f backup_$(date +%Y-%m-%d_%H-%M-%S).dump
 
       - name: Salvar backup no repositório
         env:
