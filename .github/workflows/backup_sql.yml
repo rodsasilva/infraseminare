@@ -41,8 +41,7 @@ jobs:
         env:
          PASSWORD: ${{ secrets.PASSWORD }}
         run: |
-          gpg -c --cipher-algo AES256 backup_$(date +%Y-%m-%d).dump --passphrase $PASSWORD
-
+          echo "$PASSWORD" | gpg -c --cipher-algo AES256 --batch --yes --passphrase-fd 0 backup_$(date +%Y-%m-%d).dump
 
       - name: Salvar backup no repositório
         env:
