@@ -41,7 +41,7 @@ jobs:
         env:
          PASSWORD: ${{ secrets.PASSWORD }}
         run: |
-          echo "$PASSWORD" | gpg -c --cipher-algo AES256 --batch --yes --passphrase-fd 0 backup_$(date +%Y-%m-%d).dump
+          echo "$PASSWORD" | gpg -c --cipher-algo AES256 --batch --yes --no-tty --passphrase-fd 0 --output backup_$(date +%Y-%m-%d).dump.gpg backup_$(date +%Y-%m-%d).dump
       - name: Salvar backup no repositório
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
