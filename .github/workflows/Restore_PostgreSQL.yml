@@ -29,7 +29,11 @@ jobs:
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           sudo apt-get update
           sudo apt-get install -y postgresql-client-16
-
+      - name: Descriptrofia 
+        env: 
+         PASSWORD: ${{ secrets.PASSWORD }}
+        run : |
+         echo "$PASSWORD" | gpg -d --batch --yes --no-tty --passphrase-fd 0 --output backup_$(date +%Y-%m-%d).dump backup_$(date +%Y-%m-%d).dump.gpg
       - name: Restaurar banco de dados
         env:
           PGHOST: ${{ secrets.RDS_HOST }}
@@ -38,4 +42,4 @@ jobs:
           PGDATABASE: ${{ secrets.RDS_DATABASE }}
           PGPORT: ${{ secrets.RDS_PORT }}
         run: |
-          pg_restore -U $PGUSER -h $PGHOST -p $PGPORT -d $PGDATABASE --clean backup.dump
+          pg_restore -U $PGUSER -h $PGHOST -p $PGPORT -d $PGDATABASE --clean backup_$(date +%Y-%m-%d).dump
