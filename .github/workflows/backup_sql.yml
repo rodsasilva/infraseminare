@@ -37,7 +37,7 @@ jobs:
         run: |
           pg_dump -U $PGUSER -h $PGHOST -p $PGPORT $PGDATABASE -Fc -f backup_$(date +%Y-%m-%d).dump
 
-      - name: Executa Criptografia
+      - name: Executar Criptografia
         env:
          PASSWORD: ${{ secrets.PASSWORD }}
         run: |
