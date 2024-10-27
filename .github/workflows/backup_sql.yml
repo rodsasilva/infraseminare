@@ -40,13 +40,8 @@ jobs:
       - name: Executa Criptografia
         env:
          PASSWORD: ${{ secrets.PASSWORD }}
-        run: | #
+        run: |
           echo "$PASSWORD" | gpg -c --cipher-algo AES256 --batch --yes --passphrase-fd 0 backup_$(date +%Y-%m-%d).dump
-<<<<<<< HEAD
-=======
-
->>>>>>> 6437c996fc546e8cd9a2b0ce48d52890d4625e12
-
       - name: Salvar backup no repositório
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
