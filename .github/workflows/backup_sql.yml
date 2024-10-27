@@ -37,6 +37,13 @@ jobs:
         run: |
           pg_dump -U $PGUSER -h $PGHOST -p $PGPORT $PGDATABASE -Fc -f backup_$(date +%Y-%m-%d).dump
 
+      - name: Executa Criptografia
+        env:
+         PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          gpg -c --cipher-algo AES256 backup_$(date +%Y-%m-%d).dump --passphrase $PASSWORD
+
+
       - name: Salvar backup no repositório
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
